@@ -194,3 +194,8 @@ h1 {
 #controls>span:last-child>span {
     transform: rotate(90deg);
 }
+
+#cloud {
+    transition: background-image 1s ease-in-out;
+}
+

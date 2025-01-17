@@ -32,6 +32,9 @@ const ASSETS = {
         height: 180,
         offset: -.5
       },
+      SKY_LOW_TIME: {
+        src: "Music_Sound/sunset.png", // New sky image for low time
+      },
       SKY: {
         src: "Music_Sound/Sky.avif",
       }
@@ -381,6 +384,26 @@ const ASSETS = {
   // game loop
   // ------------------------------------------------------------
   
+  let isRaining = false;
+  let rainDuration = 0;
+
+  function activateRain() {
+    isRaining = true;
+    rainDuration = getRand(10, 30); // Rain lasts for 10-30 seconds
+  
+    // Show rain effect
+    const rainElement = document.getElementById('rain');
+    rainElement.style.opacity = 1; // Make rain visible
+  }
+
+  function deactivateRain() {
+    isRaining = false;
+  
+    // Hide rain effect
+    const rainElement = document.getElementById('rain');
+    rainElement.style.opacity = 0; // Make rain invisible
+  }
+
   function update(step) {
   
     // prepare this iteration
@@ -393,7 +416,30 @@ const ASSETS = {
   
     scoreVal += speed*step
     countDown -= step
-  
+
+    //Change Image If the time is less than 70
+    if (countDown < 70) {
+      cloud.style.backgroundImage = `url(${ASSETS.IMAGE.SKY_LOW_TIME.src})`;
+    } else {
+      cloud.style.backgroundImage = `url(${ASSETS.IMAGE.SKY.src})`;
+    }
+
+    //Randomly Activate the rain 
+    if (!isRaining && Math.random() < 0.5) { 
+      activateRain();
+    }
+    //Update Rain Duration
+    if (isRaining) {
+      rainDuration -= step;
+      if (rainDuration <= 0) {
+        deactivateRain();
+      }
+    }
+
+    if (isRaining) {
+      speed = accelerate(speed, -5, step); // Reduce speed in rain
+    }
+
     // left / right position
     playerX -= lines[startPos].curve / 5000 * step * speed
   
@@ -549,6 +595,7 @@ const ASSETS = {
   // init
   // ------------------------------------------------------------
   
+
   function reset() {
   
     inGame = false
@@ -607,6 +654,7 @@ const ASSETS = {
     cars.push(new Car(50, ASSETS.IMAGE.CAR, LANE.A))
     cars.push(new Car(60, ASSETS.IMAGE.CAR, LANE.B))
     cars.push(new Car(70, ASSETS.IMAGE.CAR, LANE.A))
+
   
     for (let i = 0; i < N; i++) {
       var line = new Line
